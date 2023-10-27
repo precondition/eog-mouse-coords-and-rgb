@@ -2,7 +2,7 @@
 Loader=python3
 Module=mouse-coords-and-rgb
 IAge=3
-Name=Mouse Coordinates
+Name=Mouse Coordinates and RGB
 Description=Mouse coordinates Python plugin for Eye of GNOME\nOn mouse motion, shows the image coordinates of the mouse pointer and the RGB values of the pixel under
 Icon=about
 Authors=sdaau and precondition
