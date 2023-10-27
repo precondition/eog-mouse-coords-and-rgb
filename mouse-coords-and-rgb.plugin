@@ -7,4 +7,4 @@ Description=Mouse coordinates Python plugin for Eye of GNOME\nOn mouse motion, s
 Icon=about
 Authors=sdaau and precondition
 Copyright=Copyleft sdaau 2013
-Website=http://example.com/
+Website=https://github.com/precondition/eog-mouse-coords-and-rgb
