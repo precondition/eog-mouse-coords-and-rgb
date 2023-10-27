@@ -7,7 +7,6 @@
 # On mouse motion, shows in statusbar: scaled image size, window coords, and image pixel coords of pointer.
 # copy mousecoords.eog-plugin  mousecoords.py in ~/.gnome2/eog/plugins/ ; and enable plugin in eog Edit/Preferences/Plugins tab
 
-import gtk
 import math
 
 eog_context_id = 1
@@ -82,18 +81,14 @@ class MouseCoords(GObject.Object, Eog.WindowActivatable):
 
     # ~ def it_moved(self, event, window):
     def it_moved(self, window, event):
-        # ~ print "it_moved"
-        # ~ self.mousecoords = window.get_display().get_window_at_pointer() # window and coords
-        # but this just returns a pair of coords:
-        # ~ print window.get_image().get_size() # here is EogImage (not in activate); but 'eog.Image' object has no attribute 'get_size'
-        # ~ print " w ", window.get_image().get_pixbuf().get_width(), "h", window.get_image().get_pixbuf().get_height()
         self.mousecoords = window.get_view().get_pointer()
-        self.imwidth = window.get_image().get_pixbuf().get_width();  # cannot with self.image? (could crash due NoneType) LEAKS!
-        self.imheight = window.get_image().get_pixbuf().get_height();
-        self.zoom = window.get_view().get_zoom();
+        # Sdaau says that `get_pixbuf()` has a memory leak but I haven't noticed it so it might have been fixed?
+        self.imwidth = window.get_image().get_pixbuf().get_width()
+        self.imheight = window.get_image().get_pixbuf().get_height()
+        self.zoom = window.get_view().get_zoom()
         self.scrollviewalloc = window.get_view().get_allocation()  # gtk.gdk.Rectangle(0, 38, 768, 523), independent of scrollbars/zoom
-        self.vslide = window.get_view().get_children()[0]  # gtk.VScrollbar
-        self.hslide = window.get_view().get_children()[1]  # gtk.HScrollbar
+        self.vslide = window.get_view().get_children()[0]  # gtk.VScrollbar # TODO Update: this no longer refers to VScrollbar object
+        self.hslide = window.get_view().get_children()[1]  # gtk.HScrollbar # TODO Update: this no longer refers to HScrollbar object
         self.image = window.get_image()
 
         eog_context_id = self.window.get_statusbar().get_context_id("")
@@ -102,7 +97,6 @@ class MouseCoords(GObject.Object, Eog.WindowActivatable):
         else:
             self.window.get_statusbar().pop(2)  # our own we have to delete with a different context it (sort of?)
 
-        # ~ print r[1], r[2]
         # should do self.window.get_statusbar().get_context_id(""); but returns wrong
         # actually, that works with callback - but doesn't remove ?!
         # by bruteforce in Python Console, can see context_id is 1; (for remove)
@@ -127,8 +121,6 @@ class MouseCoords(GObject.Object, Eog.WindowActivatable):
         window = statusbar.get_window()
         if (context_id == 0):
             pass  # do nothing here; noop
-            # ~ print "ZERO"
-            # statusbar.push(eog_context_id, lastsbartext + " AAA") # causes loop
         else:
             if (context_id == 1):
                 if (not (initdel)):
@@ -136,7 +128,7 @@ class MouseCoords(GObject.Object, Eog.WindowActivatable):
                     initdel = True
                 lastsbartext = text
                 # parse and retrieve image size here - bloody pixbuf access in python plugin causes memleak!
-                if "pixels" in lastsbartext:
+                if "pixels" in lastsbartext: # This condition is never true on non-English locales !!
                     ta = lastsbartext.split(' ')
                     self.imwidth = int(ta[0])
                     self.imheight = int(ta[2])
@@ -168,7 +160,6 @@ class MouseCoords(GObject.Object, Eog.WindowActivatable):
     # as in
     # http://git.gnome.org/browse/eog/tree/src/eog-scroll-view.c?h=gnome-2-32
     def compute_scaled_size(self, window):
-        # ~ print " w ", window,
         # cannot access window.get_image().get_pixbuf().get_width() here;
         # so save in self.imwidth when possible
         # assert(self.imwidth > 0)
@@ -182,23 +173,6 @@ class MouseCoords(GObject.Object, Eog.WindowActivatable):
         valloc = self.vslide.get_allocation()
         hajd = self.window.get_view().get_hadjustment()
         vajd = self.window.get_view().get_vadjustment()
-        # print("alloc: Scrollview: ", self.scrollviewalloc, " h: ", halloc , " v: ", valloc)
-        # print("H",
-        #   " low ", hajd.get_lower(),
-        #   " val ", hajd.get_value(),
-        #   " psz ", hajd.get_page_size(),
-        #   " upp ", hajd.get_upper(),
-        #   " s_i ", hajd.get_step_increment(),
-        #   " p_i ", hajd.get_page_increment()
-        #   )
-        # ~ print("V",
-        # ~ " low ", vajd.get_lower(),
-        # ~ " val ", vajd.get_value(),
-        # ~ " psz ", vajd.get_page_size(),
-        # ~ " upp ", vajd.get_upper(),
-        # ~ " s_i ", vajd.get_step_increment(),
-        # ~ " p_i ", vajd.get_page_increment()
-        # ~ )
 
         # if (halloc.x == -1): # not good condition, -1 only at start
         if (self.imscw <= self.scrollviewalloc.width):
