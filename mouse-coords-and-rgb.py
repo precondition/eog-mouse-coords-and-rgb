@@ -81,6 +81,8 @@ class MouseCoords(GObject.Object, Eog.WindowActivatable):
 
     # ~ def it_moved(self, event, window):
     def it_moved(self, window, event):
+        if window.get_image() is None:
+            return # eog has been loaded without any image so there is no point in doing anything
         self.mousecoords = window.get_view().get_pointer()
         # Sdaau says that `get_pixbuf()` has a memory leak but I haven't noticed it so it might have been fixed?
         self.imwidth = window.get_image().get_pixbuf().get_width()
