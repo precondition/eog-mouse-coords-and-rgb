@@ -3,7 +3,7 @@
 This plugin adds a status bar showing the image coordinates of the pixel your cursor hovers around, as well as the RGB values of that pixel.
 This plugin is made for versions of `eog` running on GTK version 3. Practically speaking, it has only been tested on Eye of Gnome version 42.
 
-![showcase](showcase.webm)
+![showcase](showcase.mp4)
 
 ## Usage
 
