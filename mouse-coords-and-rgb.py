@@ -146,10 +146,6 @@ class MouseCoords(GObject.Object, Eog.WindowActivatable):
                 if 0 <= self.mouse_imgcoord_x <= pixbuf.get_width() and 0 <= self.mouse_imgcoord_y <= pixbuf.get_height():
                     # Get the pixel color at the cursor position
                     pixels = pixbuf.get_pixels()
-                    print(
-                        "pixel = pixels[(self.mouse_imgcoord_y * pixbuf.get_rowstride()) + (self.mouse_imgcoord_x * pixbuf.get_n_channels()):]")
-                    print("pixel = pixels[(", self.mouse_imgcoord_y, " * ", pixbuf.get_rowstride(), ") + (",
-                          self.mouse_imgcoord_x, "*", pixbuf.get_n_channels(), "):]")
                     pixel = pixels[(round(self.mouse_imgcoord_y) * pixbuf.get_rowstride()) + (
                                 round(self.mouse_imgcoord_x) * pixbuf.get_n_channels()):]
                     red, green, blue = pixel[:3]
@@ -185,17 +181,12 @@ class MouseCoords(GObject.Object, Eog.WindowActivatable):
             # (or corresponding right) - it is not over an image pixel,
             # so set it to -1
             if (self.mousecoords[0] < offsx):
-                print("self.mousecoords[0] < offsx: ", self.mousecoords[0], "<", offsx)
                 self.mouse_imgcoord_x = -2
             if (self.mousecoords[0] > self.scrollviewalloc.width - offsx):
-                print("self.mousecoords[0] > self.scrollviewalloc.width-offsx: ", self.mousecoords[0], ">",
-                      self.scrollviewalloc.width - offsx)
                 self.mouse_imgcoord_x = -3
             if True:
                 # mouse pointer x over image - find equivalent image pixel
                 within_image_x = self.mousecoords[0] - offsx;
-                print("self.mouse_imgcoord_x = math.floor((within_image_x/self.imscw)*self.imwidth)")
-                print(self.mouse_imgcoord_x, "= math.floor((", within_image_x, "/", self.imscw, ")*", self.imwidth, ")")
                 self.mouse_imgcoord_x = math.floor((within_image_x / self.imscw) * self.imwidth)
         else:
             # here the hor. scrollbar is shown, handle coords
