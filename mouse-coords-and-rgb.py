@@ -69,7 +69,7 @@ class MouseCoords(GObject.Object, Eog.WindowActivatable):
         initdel = False
         lastsbartext = ""
         # prints to stdout if eog called from console (eog -n .)
-        print('MouseCoords plugin activated')
+        # print('MouseCoords plugin activated')
 
     def do_deactivate(self):
         window = self.window
@@ -77,7 +77,7 @@ class MouseCoords(GObject.Object, Eog.WindowActivatable):
         self.window.get_statusbar().disconnect(self.handlerId3)
         # window.get_image().disconnect(self.handlerId4)
         self.window.get_statusbar().hide()
-        print('MouseCoords plugin deactivated')
+        # print('MouseCoords plugin deactivated')
 
     # ~ def it_moved(self, event, window):
     def it_moved(self, window, event):
