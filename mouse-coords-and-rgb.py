@@ -148,7 +148,11 @@ class MouseCoords(GObject.Object, Eog.WindowActivatable):
                     pixels = pixbuf.get_pixels()
                     pixel = pixels[(round(self.mouse_imgcoord_y) * pixbuf.get_rowstride()) + (
                                 round(self.mouse_imgcoord_x) * pixbuf.get_n_channels()):]
-                    red, green, blue = pixel[:3]
+                    if len(pixel) == 0:
+                        # Comma in parens is to ensure this gets interpreted as a tuple
+                        red, green, blue = ("--",) * 3
+                    else:
+                        red, green, blue = pixel[:3]
                     self.laststatustext += f" ~ R:{red}, G:{green}, B:{blue}"
                 else:
                     self.laststatustext += " ~ R:--, G:--, B:--"
