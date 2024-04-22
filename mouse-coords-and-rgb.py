@@ -85,8 +85,9 @@ class MouseCoords(GObject.Object, Eog.WindowActivatable):
             return # eog has been loaded without any image so there is no point in doing anything
         self.mousecoords = window.get_view().get_pointer()
         # Sdaau says that `get_pixbuf()` has a memory leak but I haven't noticed it so it might have been fixed?
-        self.imwidth = window.get_image().get_pixbuf().get_width()
-        self.imheight = window.get_image().get_pixbuf().get_height()
+        if window.get_image().get_pixbuf() is not None:
+            self.imwidth = window.get_image().get_pixbuf().get_width()
+            self.imheight = window.get_image().get_pixbuf().get_height()
         self.zoom = window.get_view().get_zoom()
         self.scrollviewalloc = window.get_view().get_allocation()  # gtk.gdk.Rectangle(0, 38, 768, 523), independent of scrollbars/zoom
         self.vslide = window.get_view().get_children()[0]  # gtk.VScrollbar # TODO Update: this no longer refers to VScrollbar object
@@ -162,12 +163,14 @@ class MouseCoords(GObject.Object, Eog.WindowActivatable):
     # as in
     # http://git.gnome.org/browse/eog/tree/src/eog-scroll-view.c?h=gnome-2-32
     def compute_scaled_size(self, window):
+        # print("hello")
         # cannot access window.get_image().get_pixbuf().get_width() here;
         # so save in self.imwidth when possible
         # assert(self.imwidth > 0)
         # assert(self.imheight > 0)
-        self.imscw = math.floor(self.window.get_image().get_pixbuf().get_width() * self.zoom + 0.5);
-        self.imsch = math.floor(self.window.get_image().get_pixbuf().get_height() * self.zoom + 0.5);
+        if self.window is not None and self.window.get_image() is not None and self.window.get_image().get_pixbuf() is not None:
+            self.imscw = math.floor(self.window.get_image().get_pixbuf().get_width() * self.zoom + 0.5);
+            self.imsch = math.floor(self.window.get_image().get_pixbuf().get_height() * self.zoom + 0.5);
 
     def compute_zoom_offsets(self):
         # must retrieve offset data from scrollbars
@@ -191,7 +194,8 @@ class MouseCoords(GObject.Object, Eog.WindowActivatable):
             if True:
                 # mouse pointer x over image - find equivalent image pixel
                 within_image_x = self.mousecoords[0] - offsx;
-                self.mouse_imgcoord_x = math.floor((within_image_x / self.imscw) * self.imwidth)
+                if self.imscw != 0:
+                    self.mouse_imgcoord_x = math.floor((within_image_x / self.imscw) * self.imwidth)
         else:
             # here the hor. scrollbar is shown, handle coords
             self.scrollfact_offx = hajd.get_value() / (hajd.get_upper() - hajd.get_lower())
